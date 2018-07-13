@@ -7,11 +7,11 @@ void setTimeDiff() {
 	pid::timerOne = pid::timerTwo;
 }
 
-double calculate_altitude(Adafruit_BME280 sensor) {
+double calculate_altitude(Adafruit_BME280 &sensor) {
 	return sensor.readAltitude(SEALEVELPRESSURE_HPA) * meterToFeet;
 }
 
-double calc_Z_accel(Adafruit_MMA8451 sensor) {
+double get_accel(Adafruit_MMA8451 &sensor) {
 	sensor.read();
 	sensors_event_t event;
 	sensor.getEvent(&event);
@@ -24,35 +24,38 @@ double projected_altitude(double veloc, double accel, double currentAlt) {
 	return ((termV * termV) / (2 * GRAV)) * log(funcConst) + currentAlt;
 }
 
-double calculate_velocity(double currentAltitude) {
-	return (currentAltitude - pid::lastAltitude) / pid::timeDiff;
+double calculate_velocity() {
+	return (pid::altitude - pid::lastAltitude) / pid::timeDiff;
 }
 
 int pid_main(double position, double altitude, double velocity, double accel) {
+	
+	using namespace pid; 	// So we don't need to keep typing pid:: in this scope.
 
-	double projectedAltitude = projected_altitude(velocity, accel, altitude);
+	projectedAltitude = projected_altitude(velocity, accel, altitude);
 
-	double P = projectedAltitude - SETPOINT;        // Proportional term.
+	P = projectedAltitude - SETPOINT;       // Proportional term.
 
-	double I = pid::I_0 + (P * pid::timeDiff);      // Integral term.
+	I = I_0 + (P * timeDiff);      			// Integral term.
 
-	if (I > I_MAX) { I = I_MAX; }			        // These if statements are here to
-	else if (I < -I_MAX) { I = -I_MAX; }	        // prevent integral windup.
+	if (I > I_MAX) { I = I_MAX; }			// These if statements are here to
+	else if (I < -I_MAX) { I = -I_MAX; }    // prevent integral windup.
 
-	double D = (P - pid::P_0) / 2;			        // Derivative term.
+	D = (P - P_0) / 2;	// Derivative term.
 
 	double diffOutput = (P * KP) + (I * KI) + (D * KD);
 
 	// This block saves the variables in this loop so it can be used in the next.
-	pid::P_0 = P;
-	pid::I_0 = I;
-	pid::lastAltitude = altitude;
+	P_0 = P;
+	I_0 = I;
+	lastAltitude = altitude;
+	setTimeDiff();
 
-	// newPosition is the new position of the the fins.
-	double newPosition = position + diffOutput;
+	// updating the position of the fairings.
+	position += diffOutput;
 
 	// These prevent the new position of the fins from going over their max and min values.
-	if (newPosition > MAX) { newPosition = MAX; } else if (newPosition < MIN) { newPosition = MIN; }
+	if (position > MAX) { position = MAX; } else if (position < MIN) { position = MIN; }
 
-	return (int)newPosition;
+	return (int) position;
 }

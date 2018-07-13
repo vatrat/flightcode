@@ -15,16 +15,11 @@
 #include "pid.h"
 #include "kalman.h"
 #include "datalog.h"
-#include "eom.h"
 
 
 // Creating some kalman filter objects. 
 Kalman altitudeFilter = Kalman(0.01);  // Or something, I don't know what the actual value is. 
 Kalman accelFilter = Kalman(0.05);     // Again, no idea what this is actually supposed to be.
-
-namespace eom {
-    double altitude;
-}
 
 // motor shield object
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -91,22 +86,22 @@ void loop() {
 
     // Sitting on the launch pad.
     if (MODE == idle) {
-        if (getAccelZ(mma) > 0) {
+        if (get_accel(mma) > 0) {
             MODE = launch;
         }
     }
 
     // Motor is burning, have to wait until burn out.
     else if (MODE == launch) {
-        if (getAccelZ(mma) < 0) {
+        if (get_accel(mma) < 0) {
             MODE = coast;
         }
     }
 
     else if (MODE == coast) {
-        eom::altitude = altitudeFilter.output(bme.readAltitude(SEALEVELPRESSURE_HPA));
+        pid::altitude = altitudeFilter.output(bme.readAltitude(SEALEVELPRESSURE_HPA));
         // Do all the controller stuff and data logging.
-        if (calculate_velocity(eom::altitude) < 0) {
+        if (calculate_velocity() < 0) {
             MODE = descent;
         }
     }

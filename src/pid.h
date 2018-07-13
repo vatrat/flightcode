@@ -3,14 +3,17 @@
 #ifndef _PID_h
 #define _PID_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include "arduino.h"
-#else
-	#include "WProgram.h"
-#endif
+#include <Adafruit_BME280.h>
+#include <Adafruit_MMA8451.h>
+
 
 namespace pid {
+	static double projectedAltitude;
+	static double altitude;			// Current altitude.
 	static double lastAltitude;		// Altitude reading on last loop.
+	static double P;
+	static double I;
+	static double D;
 	static double P_0;			    // Proportional term.
 	static double I_0;			    // Integral term.
 	static double timeDiff;			// Difference between loops, needed for proportional term.
@@ -27,8 +30,8 @@ const double KD = 0.005;			// Derivative gain.
 const int I_MAX = 100;				// Prevents integral windup.
 const double SETPOINT = 5280;		// Target altitude in feet.
 
-const int MAX = 175;				// Maximum input to motor.
-const int MIN = -15;				// Minimum input to motor.
+const short MAX = 175;				// Maximum input to motor.
+const short MIN = -15;				// Minimum input to motor.
 
 const double GRAV = 32.1737;		// Gravity constant in english units.
 const double meterToFeet = 3.280840;
@@ -37,12 +40,15 @@ const double SEALEVELPRESSURE_HPA = 1013.25;
 
 /* FUNCTION DECLARATIONS */
 
+double calculate_altitude(Adafruit_BME280 &sensor);
+
 // Calculate the projected altitude, which the controller needs to know in order to function properly.
 double projected_altitude(double veloc, double accel, double currentAlt);
 
-
 // Pretty self-explanatory
-double calculate_velocity(double currentAltitude);
+double calculate_velocity();
+
+double get_accel(Adafruit_MMA8451 &sensor);
 
 
 // The bread and butter of the whole thing, returns the position the motor should be set to.
