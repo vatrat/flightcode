@@ -3,6 +3,7 @@
 #ifndef _DATALOG_h
 #define _DATALOG_h
 
+// Gotta write this, don't remember why I started using a class here tbh
 class DataLog {
 
 public:

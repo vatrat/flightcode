@@ -2,6 +2,7 @@
 #include <SD.h>
 
 
+// Ignore this for now, work in progress
 void DataLog::initialize_file() {
 	if (!SD.begin(chipSelect)) {
 		Serial.println("SD card failed.");

@@ -3,9 +3,12 @@
 #ifndef _KALMAN_h
 #define _KALMAN_h
 
+// Using a class here because some sensors are noisier than others, 
+// and the Kalman filter depends on this value to work.
 class Kalman {
 
 public:
+	// Constructor
 	Kalman(double covariance);
 
 	// Use this method when we want to get the filtered output
@@ -20,6 +23,7 @@ private:
 	double x_k_1;       // Output from the last iteration
 	unsigned int k;     // Number of iterations
 
+	// Private method that saves the current variables to be used in the next iteration.
 	void update(double z_k);
 
 };

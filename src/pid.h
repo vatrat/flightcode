@@ -7,21 +7,6 @@
 #include <Adafruit_MMA8451.h>
 
 
-namespace pid {
-	static double projectedAltitude;
-	static double altitude;			// Current altitude.
-	static double lastAltitude;		// Altitude reading on last loop.
-	static double P;
-	static double I;
-	static double D;
-	static double P_0;			    // Proportional term.
-	static double I_0;			    // Integral term.
-	static double timeDiff;			// Difference between loops, needed for proportional term.
-	static double timerOne;
-	static double timerTwo;
-}
-
-
 /* ALL THE CONSTANTS THE CONTROLLER NEEDS TO FUNCTION */
 
 const double KP = 0.0075;			// Proportional gain.
@@ -35,7 +20,7 @@ const short MIN = -15;				// Minimum input to motor.
 
 const double GRAV = 32.1737;		// Gravity constant in english units.
 const double meterToFeet = 3.280840;
-const double SEALEVELPRESSURE_HPA = 1013.25;
+const double SEALEVELPRESSURE_HPA = 1013.25; // Pressure sensor needs this
 
 
 /* FUNCTION DECLARATIONS */

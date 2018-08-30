@@ -1,8 +1,11 @@
 /*
  Name:		flightcode.ino
  Created:	7/3/2018 6:47:02 PM
- Author:	Austen LeBeau
+ Authors:	
+    Austen LeBeau
 */
+
+// Add your name to authors if/when you add stuff.  
 
 #include <Wire.h>
 #include <SD.h>
