@@ -50,10 +50,18 @@ double get_accel(Adafruit_MMA8451 &sensor) {
 
 // This is our max altitude, which is what the pid controller uses to calculate 
 // the position of the plates.
+
+//double projected_altitude(double veloc, double accel, double currentAlt) {
+//	double termV = sqrt((GRAV * veloc * veloc) / -(accel + GRAV));
+//	double funcConst = ((veloc * veloc) + (termV * termV)) / (termV * termV);
+//	return ((termV * termV) / (2 * GRAV)) * log(funcConst) + currentAlt;
+//}
+
 double projected_altitude(double veloc, double accel, double currentAlt) {
-	double termV = sqrt((GRAV * veloc * veloc) / -(accel + GRAV));
-	double funcConst = ((veloc * veloc) + (termV * termV)) / (termV * termV);
-	return ((termV * termV) / (2 * GRAV)) * log(funcConst) + currentAlt;
+  double velocsqrd = veloc * veloc;
+	double termV = (GRAV * velocsqrd) / -(accel + GRAV);
+	double logFuncConst = log((velocsqrd + termV) / termV);
+	return ((termV / (2 * GRAV)) * logfuncConst) + currentAlt;
 }
 
 // Get the velocity.
